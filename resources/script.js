@@ -17,6 +17,7 @@ const colours = {
   normal: '#F5F5F5',
 }
 
+const main_types = Object.keys(colours)
 const fetchPokemons = async () => {
   for (let i = 1; 1 <= pokemon_count; i++) {
     await getPokemon(i)
@@ -27,7 +28,33 @@ const getPokemon = async (id) => {
   const url = `https://pokeapi.co/api/v2/pokemon/${id}`
   const res = await fetch(url)
   const data = await res.json()
-  console.log(data)
+  createPokemonCard(data)
+}
+
+const createPokemonCard = async (pokemon) => {
+  const pokemonEl = document.createElement('div')
+  pokemonEl.classList.add('pokemon')
+  const name = pokemon.name[0].toUpperCase() + pokemon.name.slice(1)
+  const id = pokemon.id.toString().padStart(3, '0')
+  const poke_types = pokemon.types.map((type) => type.type.name)
+  const type = main_types.find((type) => poke_types.indexOf(type) > -1)
+  const colour = colours[type]
+  pokemonEl.style.backgroundColor = colour
+
+  const pokemonInnerHTML = `
+      <div class="pokemon" style="background-color: rgb(222, 253, 224)">
+        <div class="img-container">
+          <img src="https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png" alt="pokemon image" />
+        </div>
+        <div class="info">
+          <span class="number">#${id}</span>
+          <h3 class="name">${name}</h3>
+          <small class="type">Type <span>${type}</span></small>
+        </div>
+    `
+  pokemonEl.innerHTML = pokemonInnerHTML
+
+  poke_container.appendChild(pokemonEl)
 }
 
 fetchPokemons()
